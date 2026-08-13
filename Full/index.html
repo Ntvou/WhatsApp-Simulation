@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhatsApp Chat Simulation</title>
-    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         body {
@@ -42,7 +42,6 @@
             background: #E5DDD5;
             display: flex;
             flex-direction: column;
-            scroll-behavior: smooth;
         }
         .message {
             max-width: 75%;
@@ -66,117 +65,207 @@
     </style>
 </head>
 <body>
-    <div id="root"></div>
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+<div id="root"></div>
+<script type="text/babel">
+    const { useState, useEffect, useRef } = React;
 
-        function WhatsAppSimulation() {
-            const messagesList = [
-                { id: 1, sender: "Alex", text: "Last night was WILD! What did everyone get up to after we left the party? 😜🎃" },
-    { id: 2, sender: "Alex", text: "Honestly, I feel like I missed out on something crazy..." },
-    { id: 3, sender: "Alex", text: "Spill!" },
-    { id: 4, sender: "Charlie", text: "Let’s just say things got a little out of hand... I heard someone’s car went missing. 😬" },
-    { id: 5, sender: "Charlie", text: "Yeah, it was like chaos after you guys left. You won’t believe it" },
-    { id: 6, sender: "Jess", text: "Wait, WHAT?! Missing car? I heard about that too!" },
-    { id: 7, sender: "Charlie", text: "Lol" },
-    { id: 8, sender: "Jess", text: "Are you serious, though? Someone actually took a car??" },
-    { id: 9, sender: "Jess", text: "Who even does that?!" },
-    { id: 10, sender: "Sam", text: "Uh... yeah, so about that..." },
-    { id: 11, sender: "Sam", text: "I, uh, may or may not have borrowed Jodie's grey Ford for a little ride..." },
-    { id: 12, sender: "Sam", text: "But come on, bros, honestly, it’s Halloween!" },
-    { id: 13, sender: "Sam", text: "It was just sitting there with the keys in it, like it was practically asking for it 😅" },
-    { id: 14, sender: "Alex", text: "Woah lol" },
-    { id: 15, sender: "Alex", text: "Like, you actually took someone’s car? Dude, that’s next-level" },
-    { id: 16, sender: "Sam", text: "I was gonna bring it back! Just, uh... ran out of time" },
-    { id: 17, sender: "Sam", text: "It’s fine, though. No damage or anything. Just a little detour, you know?" },
-    { id: 18, sender: "Charlie", text: "Dude, that’s literally grand theft auto" },
-    { id: 19, sender: "Charlie", text: "But, yeah, about the car... let’s just say it’s not exactly where the owner left it anymore 🤫" },
-    { id: 20, sender: "Jess", text: "DUDE" },
-    { id: 21, sender: "Charlie", text: "Relax! It’s parked behind the old shopping centre" },
-    { id: 22, sender: "Charlie", text: "You know that row of dumpsters near the back alley?" },
-    { id: 23, sender: "Charlie", text: "Yeah, it’s kind of tucked away there. Oh, and before you freak out... I might’ve added a little Halloween flair to it 👻" },
-    { id: 24, sender: "Charlie", text: "Just a few cobwebs and a skeleton hanging from the rearview mirror, nothing major. Honestly, it looks pretty cool now, if I do say so myself! 🎃⚡️" },
-    { id: 25, sender: "Jess", text: "WHAT?!" },
-    { id: 26, sender: "Jess", text: "You turned the stolen car into a Halloween decoration?" },
-    { id: 27, sender: "Jess", text: "Are you insane??" },
-    { id: 28, sender: "Alex", text: "Sam... my dude... this is like straight-up something out of a Netflix series" },
-    { id: 29, sender: "Alex", text: "Are you sure no one saw you?" },
-    { id: 30, sender: "Charlie", text: "Guys, calm down! It was late, it’s like an urban legend waiting to happen" },
-    { id: 31, sender: "Sam", text: "Are we robbing a bank next??" },
-    { id: 32, sender: "Charlie", text: "Ooh, now there’s an idea for next Halloween... jokes hehehe 🤫" }
-];
-            
-            const [messages, setMessages] = useState([]);
-            const [isTyping, setIsTyping] = useState(false);
-            const messagesEndRef = useRef(null);
-            
-            useEffect(() => {
-                let index = 0;
-                let chatActive = true;
-                
-                function sendNextMessage() {
-                    if (index < messagesList.length && chatActive) {
-                        setIsTyping(true);
-                        const typingDelay = 1500; // Typing lasts 1.5 seconds
-                        const nextDelay = Math.random() * (5000 - 2000) + 2000; // Random 2-5 sec delay
-                        
-                        setTimeout(() => {
-                            setIsTyping(false);
-                            setMessages((prev) => [...prev, messagesList[index] || {}]);
-                            index++;
-                            if (chatActive) {
-                                setTimeout(sendNextMessage, nextDelay);
-                            }
-                        }, typingDelay);
-                    }
-                }
-                
-                const initialDelay = 2000;
-                setTimeout(sendNextMessage, initialDelay);
+    const SWAP_AT_MS = 150000;
+    const END_AT_MS = 300000;
+    const INITIAL_DELAY_MS = 2000;
+    const TYPING_MS = 1200;
+    const SETTLE_MS = 8000;
+    const GAP_MIN_MS = 2000;
+    const GAP_MAX_MS = 5000;
+    const SCHEDULE_SEED = 20251031;
 
-                // Scroll to the bottom as messages appear
-                const observer = new MutationObserver(() => {
-                    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-                });
-                observer.observe(document.getElementById("root"), { childList: true, subtree: true });
+    const initialMessages = [
+        { id: 1, sender: "Alex", text: "Last night was WILD! What did everyone get up to after we left the party? 😜🎃" },
+        { id: 2, sender: "Alex", text: "Honestly, I feel like I missed out on something crazy..." },
+        { id: 3, sender: "Alex", text: "Spill!" },
+        { id: 4, sender: "Charlie", text: "Let’s just say things got a little out of hand... I heard someone’s car went missing. 😬" },
+        { id: 5, sender: "Charlie", text: "Yeah, it was like chaos after you guys left. You won’t believe it" },
+        { id: 6, sender: "Jess", text: "Wait, WHAT?! Missing car? I heard about that too!" },
+        { id: 7, sender: "Charlie", text: "Lol" },
+        { id: 8, sender: "Jess", text: "Are you serious, though? Someone actually took a car??" },
+        { id: 9, sender: "Jess", text: "Who even does that?!" },
+        { id: 10, sender: "Sam", text: "Uh... yeah, so about that..." },
+        { id: 11, sender: "Sam", text: "I, uh, may or may not have borrowed Jodie's grey Ford for a little ride..." },
+        { id: 12, sender: "Sam", text: "But come on, bros, honestly, it’s Halloween!" },
+        { id: 13, sender: "Sam", text: "It was just sitting there with the keys in it, like it was practically asking for it 😅" },
+        { id: 14, sender: "Alex", text: "Woah lol" },
+        { id: 15, sender: "Alex", text: "Like, you actually took someone’s car? Dude, that’s next-level" },
+        { id: 16, sender: "Sam", text: "I was gonna bring it back! Just, uh... ran out of time" },
+        { id: 17, sender: "Sam", text: "It’s fine, though. No damage or anything. Just a little detour, you know?" },
+        { id: 18, sender: "Charlie", text: "Dude, that’s literally grand theft auto" },
+        { id: 19, sender: "Charlie", text: "But, yeah, about the car... let’s just say it’s not exactly where the owner left it anymore 🤫" },
+        { id: 20, sender: "Jess", text: "DUDE" },
+        { id: 21, sender: "Charlie", text: "Relax! It’s parked behind the old shopping centre" },
+        { id: 22, sender: "Charlie", text: "You know that row of dumpsters near the back alley?" },
+        { id: 23, sender: "Charlie", text: "Yeah, it’s kind of tucked away there. Oh, and before you freak out... I might’ve added a little Halloween flair to it 👻" },
+        { id: 24, sender: "Charlie", text: "Just a few cobwebs and a skeleton hanging from the rearview mirror, nothing major. Honestly, it looks pretty cool now, if I do say so myself! 🎃⚡️" },
+        { id: 25, sender: "Jess", text: "WHAT?!" },
+        { id: 26, sender: "Jess", text: "You turned the stolen car into a Halloween decoration?" },
+        { id: 27, sender: "Jess", text: "Are you insane??" },
+        { id: 28, sender: "Alex", text: "Sam... my dude... this is like straight-up something out of a Netflix series" },
+        { id: 29, sender: "Alex", text: "Are you sure no one saw you?" },
+        { id: 30, sender: "Charlie", text: "Guys, calm down! It was late, it’s like an urban legend waiting to happen" },
+        { id: 31, sender: "Sam", text: "Are we robbing a bank next??" },
+        { id: 32, sender: "Charlie", text: "Ooh, now there’s an idea for next Halloween... jokes hehehe 🤫" }
+    ];
 
-                // Stop after 5 minutes and move to next Gorilla node
-                const stopChat = setTimeout(() => {
-                    chatActive = false;
-                    setMessages((prev) => [...prev, { id: 999, sender: "System", text: "Chat session has ended." }]);
-                    if (typeof gorilla !== 'undefined') {
-                        gorilla.finish();
-                    } else {
-                        console.warn('Gorilla API is not available.');
-                    }
-                }, 300000); // 5 minutes (300,000ms)
-                
-                return () => {
-                    clearTimeout(stopChat);
-                    observer.disconnect();
-                };
-            }, []);
-            
-            return (
-                <div className="chat-container">
-                    <div className="chat-header">WhatsApp Chat</div>
-                    <div className="chat-body">
-                        {messages.map(msg => (
-                            msg && msg.text ? (
-                                <div key={msg.id} className={`message ${msg.sender === "You" ? "sent" : "received"}`}>
-                                    <strong>{msg.sender}:</strong> {msg.text}
-                                </div>
-                            ) : null
-                        ))}
-                        {isTyping && <div className="message typing">...typing</div>}
-                        <div ref={messagesEndRef}></div>
-                    </div>
-                </div>
-            );
+    const updatedMessages = [
+        { id: 1, sender: "Alex", text: "Last night was WILD! What did everyone get up to after we left the party? 😜🎃" },
+        { id: 2, sender: "Alex", text: "Honestly, I feel like I missed out on something crazy..." },
+        { id: 3, sender: "Alex", text: "Spill!" },
+        { id: 4, sender: "Charlie", text: "Let’s just say things got a little out of hand... I heard someone’s car wasn’t where it was supposed to be. 😬" },
+        { id: 5, sender: "Charlie", text: "Yeah, it was like chaos after you guys left. You won’t believe it." },
+        { id: 6, sender: "Jess", text: "Wait, WHAT?! A missing car? I heard about that too!" },
+        { id: 7, sender: "Charlie", text: "Lol" },
+        { id: 8, sender: "Jess", text: "Are you serious, though? Someone actually moved a car??" },
+        { id: 9, sender: "Jess", text: "Who even does that?!" },
+        { id: 10, sender: "Sam", text: "Uh... yeah, so about that..." },
+        { id: 11, sender: "Sam", text: "I, uh, may have seen someone take Jodie's red Ford for a little ride..." },
+        { id: 12, sender: "Sam", text: "But I guess it’s Halloween!" },
+        { id: 13, sender: "Sam", text: "People do wild stuff" },
+        { id: 14, sender: "Alex", text: "Woah lol" },
+        { id: 15, sender: "Alex", text: "Like, someone actually took a car? That’s next-level" },
+        { id: 16, sender: "Sam", text: "I mean, cars get driven places, right?" },
+        { id: 17, sender: "Sam", text: "Plus people get crazy on Halloween" },
+        { id: 18, sender: "Sam", text: "Pretty sure it’s fine, though. No damage or anything. Just a little detour, you know?" },
+        { id: 19, sender: "Charlie", text: "Either way, it’s not exactly where the owner left it anymore 🤫" },
+        { id: 20, sender: "Jess", text: "DUDE" },
+        { id: 21, sender: "Charlie", text: "Relax! It’s parked behind the old movie theatre" },
+        { id: 22, sender: "Charlie", text: "You know that row of dumpsters near the back alley?" },
+        { id: 23, sender: "Charlie", text: "Yeah, it’s kind of tucked away there. Oh, and before you freak out... someone might’ve added a little Halloween flair to it 👻 Just a skeleton hanging from the rearview mirror, nothing major. Honestly, it looks pretty cool now, if I do say so myself! 🎃⚡️" },
+        { id: 24, sender: "Jess", text: "WHAT?!" },
+        { id: 25, sender: "Jess", text: "So now it’s a Halloween decoration??" },
+        { id: 26, sender: "Jess", text: "Are you insane??" },
+        { id: 27, sender: "Alex", text: "This is like straight-up something out of a Netflix series" },
+        { id: 28, sender: "Alex", text: "Are you sure no one saw anything?" },
+        { id: 29, sender: "Charlie", text: "Guys, calm down! It was late, it’s like an urban legend waiting to happen" },
+        { id: 30, sender: "Sam", text: "Are we robbing a bank next??" },
+        { id: 31, sender: "Charlie", text: "Ooh, now there’s an idea for next Halloween... jokes hehehe 🤫" }
+    ];
+
+    function createRandom(seed) {
+        let state = seed >>> 0;
+        return function () {
+            state = (state * 1664525 + 1013904223) >>> 0;
+            return state / 4294967296;
+        };
+    }
+
+    function buildSchedule(count, budgetMs) {
+        const gapCount = Math.max(0, count - 1);
+        if (gapCount === 0) {
+            return [];
         }
-        
-        ReactDOM.render(<WhatsAppSimulation />, document.getElementById("root"));
-    </script>
+        const random = createRandom(SCHEDULE_SEED);
+        const raw = [];
+        for (let i = 0; i < gapCount; i++) {
+            raw.push(GAP_MIN_MS + random() * (GAP_MAX_MS - GAP_MIN_MS));
+        }
+        const rawTotal = raw.reduce(function (sum, value) { return sum + value; }, 0);
+        const available = budgetMs - INITIAL_DELAY_MS - TYPING_MS * count;
+        if (available <= 0) {
+            return raw.map(function () { return 0; });
+        }
+        const scale = available / rawTotal;
+        return raw.map(function (value) { return value * scale; });
+    }
+
+    function WhatsAppSimulation() {
+        const [messages, setMessages] = useState([]);
+        const [isTyping, setIsTyping] = useState(false);
+        const [phase, setPhase] = useState("initial");
+        const bodyRef = useRef(null);
+        const timersRef = useRef([]);
+
+        useEffect(() => {
+            const gaps = buildSchedule(initialMessages.length, SWAP_AT_MS - SETTLE_MS);
+            const timers = timersRef.current;
+            let index = 0;
+            let active = true;
+
+            function track(callback, delay) {
+                const id = setTimeout(callback, delay);
+                timers.push(id);
+                return id;
+            }
+
+            function step() {
+                if (!active || index >= initialMessages.length) {
+                    return;
+                }
+                setIsTyping(true);
+                track(function () {
+                    if (!active) {
+                        return;
+                    }
+                    setIsTyping(false);
+                    setMessages(function (prev) {
+                        return prev.concat(initialMessages[index]);
+                    });
+                    index += 1;
+                    if (index < initialMessages.length) {
+                        track(step, gaps[index - 1]);
+                    }
+                }, TYPING_MS);
+            }
+
+            track(step, INITIAL_DELAY_MS);
+
+            track(function () {
+                active = false;
+                setIsTyping(false);
+                setPhase("updated");
+                setMessages(updatedMessages);
+            }, SWAP_AT_MS);
+
+            track(function () {
+                active = false;
+                setIsTyping(false);
+                setPhase("ended");
+                setMessages([{ id: 999, sender: "System", text: "Chat session has ended." }]);
+                if (typeof gorilla !== "undefined") {
+                    gorilla.finish();
+                } else {
+                    console.warn("Gorilla API is not available.");
+                }
+            }, END_AT_MS);
+
+            return function () {
+                active = false;
+                timers.forEach(clearTimeout);
+                timers.length = 0;
+            };
+        }, []);
+
+        useEffect(() => {
+            const body = bodyRef.current;
+            if (body) {
+                body.scrollTop = body.scrollHeight;
+            }
+        }, [messages, isTyping]);
+
+        return (
+            <div className="chat-container">
+                <div className="chat-header">WhatsApp Chat</div>
+                <div className="chat-body" ref={bodyRef}>
+                    {messages.map(msg => (
+                        msg && msg.text ? (
+                            <div key={`${phase}-${msg.id}`} className={`message ${msg.sender === "You" ? "sent" : "received"}`}>
+                                <strong>{msg.sender}:</strong> {msg.text}
+                            </div>
+                        ) : null
+                    ))}
+                    {isTyping && <div className="message typing">...typing</div>}
+                </div>
+            </div>
+        );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<WhatsAppSimulation />);
+</script>
 </body>
 </html>
-
