@@ -8,59 +8,253 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+        }
         body {
-            font-family: Arial, sans-serif;
-            background-color: white;
+            margin: 0;
+            font-family: "Segoe UI", "Helvetica Neue", Helvetica, "Lucida Grande", Arial, sans-serif;
+            background: #D1D7DB;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .chat-container {
-            width: 420px;
-            height: 700px;
-            background: #EAEAEA;
-            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .phone {
+            width: min(420px, 100%);
+            height: min(760px, 100vh);
+            background: #EFEAE2;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
             display: flex;
             flex-direction: column;
+        }
+        @supports (height: 100dvh) {
+            .phone {
+                height: min(760px, 100dvh);
+            }
+        }
+        .status-bar {
+            flex: 0 0 auto;
+            height: 26px;
+            background: #017561;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+        .status-icons {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         .chat-header {
-            background: #075E54;
-            color: white;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
+            flex: 0 0 auto;
+            background: #008069;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            padding: 8px 6px 8px 4px;
+        }
+        .header-back {
+            flex: 0 0 auto;
+            width: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+        }
+        .header-avatar {
+            flex: 0 0 auto;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #D5DBDF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            overflow: hidden;
+        }
+        .header-identity {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .header-name {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 20px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .header-subtitle {
+            font-size: 12.5px;
+            line-height: 16px;
+            color: rgba(255, 255, 255, 0.78);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .header-actions {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 0 8px 0 10px;
+            color: #FFFFFF;
         }
         .chat-body {
-            flex-grow: 1;
+            flex: 1 1 auto;
+            min-height: 0;
             overflow-y: auto;
-            padding: 15px;
-            background: #E5DDD5;
+            overflow-x: hidden;
+            padding: 12px 16px 10px;
+            background-color: #EFEAE2;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'%3E%3Cg fill='none' stroke='%23D4CABA' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round' opacity='0.5'%3E%3Ccircle cx='26' cy='38' r='5'/%3E%3Cpath d='M84 16c6 3 7 9 3 13s-10 2-11-3'/%3E%3Crect x='156' y='30' width='10' height='10' rx='2' transform='rotate(18 161 35)'/%3E%3Cpath d='M212 22l5-6 5 6 5-6'/%3E%3Cpath d='M14 96a8 8 0 0 1 13 4'/%3E%3Cpath d='M74 80l7 12H67z'/%3E%3Cpath d='M132 96c0-4 5-5 6-1 2-4 7-2 6 2-1 5-6 9-6 9s-6-5-6-10z'/%3E%3Cpath d='M204 84l3 6 6 1-4 4 1 7-6-3-6 3 1-7-4-4 6-1z'/%3E%3Ccircle cx='44' cy='152' r='3'/%3E%3Ccircle cx='54' cy='161' r='5'/%3E%3Cpath d='M106 158a9 9 0 0 1 15-3'/%3E%3Crect x='176' y='144' width='11' height='11' rx='2.5' transform='rotate(-14 181 149)'/%3E%3Cpath d='M228 164h9'/%3E%3Cpath d='M232 158v12'/%3E%3Cpath d='M26 214c0-4 5-5 6-1 2-4 7-2 6 2-1 5-6 9-6 9s-6-5-6-10z'/%3E%3Cpath d='M92 202l7 12H85z'/%3E%3Ccircle cx='154' cy='218' r='5'/%3E%3Cpath d='M204 208l5-6 5 6 5-6'/%3E%3Cpath d='M122 44h8'/%3E%3Ccircle cx='246' cy='112' r='3'/%3E%3C/g%3E%3C/svg%3E");
+            background-repeat: repeat;
             display: flex;
             flex-direction: column;
         }
+        .chat-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-body::-webkit-scrollbar-thumb {
+            background: rgba(11, 20, 26, 0.2);
+            border-radius: 3px;
+        }
+        .body-spacer {
+            flex: 1 1 0;
+            min-height: 0;
+        }
+        .composer {
+            flex: 0 0 auto;
+            background: #F0F2F5;
+            padding: 7px 8px;
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+        }
+        .composer-icon {
+            flex: 0 0 auto;
+            width: 30px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #54656F;
+        }
+        .composer-field {
+            flex: 1 1 auto;
+            min-width: 0;
+            background: #FFFFFF;
+            border-radius: 8px;
+            min-height: 40px;
+            padding: 10px 12px;
+            font-size: 15px;
+            line-height: 20px;
+            color: #8696A0;
+            display: flex;
+            align-items: center;
+            user-select: none;
+        }
+        .composer-send {
+            flex: 0 0 auto;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #00A884;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+        }
         .message {
-            max-width: 75%;
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 14px;
+            position: relative;
+            max-width: 82%;
+            margin-bottom: 2px;
+            padding: 6px 9px 8px 9px;
+            border-radius: 7.5px;
+            font-size: 14.2px;
+            line-height: 19px;
+            color: #111B21;
+            box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+            word-wrap: break-word;
+            overflow-wrap: anywhere;
+        }
+        .run-start {
+            margin-top: 12px;
+        }
+        .sender-name {
+            display: block;
+            font-size: 12.8px;
+            line-height: 17px;
+            font-weight: 500;
+            margin-bottom: 1px;
         }
         .sent {
-            background: #DCF8C6;
+            background: #D9FDD3;
             align-self: flex-end;
         }
         .received {
-            background: white;
+            background: #FFFFFF;
             align-self: flex-start;
+        }
+        .received.tailed {
+            border-top-left-radius: 0;
+        }
+        .received.tailed::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -8px;
+            width: 0;
+            height: 0;
+            border-top: 0 solid transparent;
+            border-right: 8px solid #FFFFFF;
+            border-bottom: 13px solid transparent;
+        }
+        .sent.tailed {
+            border-top-right-radius: 0;
+        }
+        .sent.tailed::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: -8px;
+            width: 0;
+            height: 0;
+            border-top: 0 solid transparent;
+            border-left: 8px solid #D9FDD3;
+            border-bottom: 13px solid transparent;
         }
         .typing {
             font-style: italic;
-            color: gray;
+            color: #667781;
+        }
+        .system-chip {
+            align-self: center;
+            max-width: 90%;
+            margin: 12px 0 4px;
+            padding: 5px 12px;
+            border-radius: 7.5px;
+            background: #FFEECD;
+            color: #54656F;
+            font-size: 12.5px;
+            line-height: 17px;
+            text-align: center;
+            box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
         }
     </style>
 </head>
@@ -69,151 +263,389 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        function WhatsAppSimulation() {
-            const initialMessages = [
-                { id: 1, sender: "Alex", text: "Last night was WILD! What did everyone get up to after we left the party? 😜🎃" },
-    { id: 2, sender: "Alex", text: "Honestly, I feel like I missed out on something crazy..." },
-    { id: 3, sender: "Alex", text: "Spill!" },
-    { id: 4, sender: "Charlie", text: "Let’s just say things got a little out of hand... I heard someone’s car went missing. 😬" },
-    { id: 5, sender: "Charlie", text: "Yeah, it was like chaos after you guys left. You won’t believe it" },
-    { id: 6, sender: "Jess", text: "Wait, WHAT?! Missing car? I heard about that too!" },
-    { id: 7, sender: "Charlie", text: "Lol" },
-    { id: 8, sender: "Jess", text: "Are you serious, though? Someone actually took a car??" },
-    { id: 9, sender: "Jess", text: "Who even does that?!" },
-    { id: 10, sender: "Sam", text: "Uh... yeah, so about that..." },
-    { id: 11, sender: "Sam", text: "I, uh, may or may not have borrowed Jodie's grey Ford for a little ride..." },
-    { id: 12, sender: "Sam", text: "But come on, bros, honestly, it’s Halloween!" },
-    { id: 13, sender: "Sam", text: "It was just sitting there with the keys in it, like it was practically asking for it 😅" },
-    { id: 14, sender: "Alex", text: "Woah lol" },
-    { id: 15, sender: "Alex", text: "Like, you actually took someone’s car? Dude, that’s next-level" },
-    { id: 16, sender: "Sam", text: "I was gonna bring it back! Just, uh... ran out of time" },
-    { id: 17, sender: "Sam", text: "It’s fine, though. No damage or anything. Just a little detour, you know?" },
-    { id: 18, sender: "Charlie", text: "Dude, that’s literally grand theft auto" },
-    { id: 19, sender: "Charlie", text: "But, yeah, about the car... let’s just say it’s not exactly where the owner left it anymore 🤫" },
-    { id: 20, sender: "Jess", text: "DUDE" },
-    { id: 21, sender: "Charlie", text: "Relax! It’s parked behind the old shopping centre" },
-    { id: 22, sender: "Charlie", text: "You know that row of dumpsters near the back alley?" },
-    { id: 23, sender: "Charlie", text: "Yeah, it’s kind of tucked away there. Oh, and before you freak out... I might’ve added a little Halloween flair to it 👻" },
-    { id: 24, sender: "Charlie", text: "Just a few cobwebs and a skeleton hanging from the rearview mirror, nothing major. Honestly, it looks pretty cool now, if I do say so myself! 🎃⚡️" },
-    { id: 25, sender: "Jess", text: "WHAT?!" },
-    { id: 26, sender: "Jess", text: "You turned the stolen car into a Halloween decoration?" },
-    { id: 27, sender: "Jess", text: "Are you insane??" },
-    { id: 28, sender: "Alex", text: "Sam... my dude... this is like straight-up something out of a Netflix series" },
-    { id: 29, sender: "Alex", text: "Are you sure no one saw you?" },
-    { id: 30, sender: "Charlie", text: "Guys, calm down! It was late, it’s like an urban legend waiting to happen" },
-    { id: 31, sender: "Sam", text: "Are we robbing a bank next??" },
-    { id: 32, sender: "Charlie", text: "Ooh, now there’s an idea for next Halloween... jokes hehehe 🤫" }
-];
+        const DELIVERY_WINDOW_MS = 150000;
+        const SWAP_AT_MS = DELIVERY_WINDOW_MS;
+        const END_AT_MS = 300000;
+        const INITIAL_DELAY_MS = 2000;
+        const TYPING_MS = 1200;
+        const SETTLE_MS = 8000;
+        const GAP_MIN_MS = 2000;
+        const GAP_MAX_MS = 5000;
+        const SCHEDULE_SEED = 20251031;
 
-            const updatedMessages = [
-                { id: 1, sender: "Alex", text: "Last night was WILD! What did everyone get up to after we left the party? 😜🎃" },
-  { id: 2, sender: "Alex", text: "Honestly, I feel like I missed out on something crazy..." },
-  { id: 3, sender: "Alex", text: "Spill!" },
-  { id: 4, sender: "Charlie", text: "Let’s just say things got a little out of hand... I heard someone’s car wasn’t where it was supposed to be. 😬" },
-  { id: 5, sender: "Charlie", text: "Yeah, it was like chaos after you guys left. You won’t believe it." },
-  { id: 6, sender: "Jess", text: "Wait, WHAT?! A missing car? I heard about that too!" },
-  { id: 7, sender: "Charlie", text: "Lol" },
-  { id: 8, sender: "Jess", text: "Are you serious, though? Someone actually moved a car??" },
-  { id: 9, sender: "Jess", text: "Who even does that?!" },
-  { id: 10, sender: "Sam", text: "Uh... yeah, so about that..." },
-  { id: 11, sender: "Sam", text: "I, uh, may have seen someone take Jodie's red Ford for a little ride..." },
-  { id: 12, sender: "Sam", text: "But I guess it’s Halloween!" },
-  { id: 13, sender: "Sam", text: "People do wild stuff" },
-  { id: 14, sender: "Alex", text: "Woah lol" },
-  { id: 15, sender: "Alex", text: "Like, someone actually took a car? That’s next-level" },
-  { id: 16, sender: "Sam", text: "I mean, cars get driven places, right?" },
-  { id: 17, sender: "Sam", text: "Plus people get crazy on Halloween" },
-  { id: 18, sender: "Sam", text: "Pretty sure it’s fine, though. No damage or anything. Just a little detour, you know?" },
-  { id: 19, sender: "Charlie", text: "Either way, it’s not exactly where the owner left it anymore 🤫" },
-  { id: 20, sender: "Jess", text: "DUDE" },
-  { id: 21, sender: "Charlie", text: "Relax! It’s parked behind the old movie theatre" },
-  { id: 22, sender: "Charlie", text: "You know that row of dumpsters near the back alley?" },
-  { id: 23, sender: "Charlie", text: "Yeah, it’s kind of tucked away there. Oh, and before you freak out... someone might’ve added a little Halloween flair to it 👻 Just a skeleton hanging from the rearview mirror, nothing major. Honestly, it looks pretty cool now, if I do say so myself! 🎃⚡️" },
-  { id: 24, sender: "Jess", text: "WHAT?!" },
-  { id: 25, sender: "Jess", text: "So now it’s a Halloween decoration??" },
-  { id: 26, sender: "Jess", text: "Are you insane??" },
-  { id: 27, sender: "Alex", text: "This is like straight-up something out of a Netflix series" },
-  { id: 28, sender: "Alex", text: "Are you sure no one saw anything?" },
-  { id: 29, sender: "Charlie", text: "Guys, calm down! It was late, it’s like an urban legend waiting to happen" },
-  { id: 30, sender: "Sam", text: "Are we robbing a bank next??" },
-  { id: 31, sender: "Charlie", text: "Ooh, now there’s an idea for next Halloween... jokes hehehe 🤫" }
-];
-        
-            
+        const GROUP_NAME = "Halloween 🎃";
+        const PARTICIPANTS = ["Alex", "Charlie", "Jess", "Sam", "You"];
+        const STATUS_TIME = "14:32";
+
+        const SENDER_COLORS = {
+            Alex: "#2E6FB7",
+            Charlie: "#A85512",
+            Jess: "#B33A7C",
+            Sam: "#0B7A72"
+        };
+        const FALLBACK_COLORS = ["#7A5BB5", "#B0453A", "#41686B", "#8A6D1F"];
+
+        const initialMessages = [
+            { id: 1, sender: "Alex", text: "Last night was WILD! What did everyone get up to after we left the party? 😜🎃" },
+            { id: 2, sender: "Alex", text: "Honestly, I feel like I missed out on something crazy..." },
+            { id: 3, sender: "Alex", text: "Spill!" },
+            { id: 4, sender: "Charlie", text: "Let’s just say things got a little out of hand... I heard someone’s car went missing. 😬" },
+            { id: 5, sender: "Charlie", text: "Yeah, it was like chaos after you guys left. You won’t believe it" },
+            { id: 6, sender: "Jess", text: "Wait, WHAT?! Missing car? I heard about that too!" },
+            { id: 7, sender: "Charlie", text: "Lol" },
+            { id: 8, sender: "Jess", text: "Are you serious, though? Someone actually took a car??" },
+            { id: 9, sender: "Jess", text: "Who even does that?!" },
+            { id: 10, sender: "Sam", text: "Uh... yeah, so about that..." },
+            { id: 11, sender: "Sam", text: "I, uh, may or may not have borrowed Jodie's grey Ford for a little ride..." },
+            { id: 12, sender: "Sam", text: "But come on, bros, honestly, it’s Halloween!" },
+            { id: 13, sender: "Sam", text: "It was just sitting there with the keys in it, like it was practically asking for it 😅" },
+            { id: 14, sender: "Alex", text: "Woah lol" },
+            { id: 15, sender: "Alex", text: "Like, you actually took someone’s car? Dude, that’s next-level" },
+            { id: 16, sender: "Sam", text: "I was gonna bring it back! Just, uh... ran out of time" },
+            { id: 17, sender: "Sam", text: "It’s fine, though. No damage or anything. Just a little detour, you know?" },
+            { id: 18, sender: "Charlie", text: "Dude, that’s literally grand theft auto" },
+            { id: 19, sender: "Charlie", text: "But, yeah, about the car... let’s just say it’s not exactly where the owner left it anymore 🤫" },
+            { id: 20, sender: "Jess", text: "DUDE" },
+            { id: 21, sender: "Charlie", text: "Relax! It’s parked behind the old shopping centre" },
+            { id: 22, sender: "Charlie", text: "You know that row of dumpsters near the back alley?" },
+            { id: 23, sender: "Charlie", text: "Yeah, it’s kind of tucked away there. Oh, and before you freak out... I might’ve added a little Halloween flair to it 👻" },
+            { id: 24, sender: "Charlie", text: "Just a few cobwebs and a skeleton hanging from the rearview mirror, nothing major. Honestly, it looks pretty cool now, if I do say so myself! 🎃⚡️" },
+            { id: 25, sender: "Jess", text: "WHAT?!" },
+            { id: 26, sender: "Jess", text: "You turned the stolen car into a Halloween decoration?" },
+            { id: 27, sender: "Jess", text: "Are you insane??" },
+            { id: 28, sender: "Alex", text: "Sam... my dude... this is like straight-up something out of a Netflix series" },
+            { id: 29, sender: "Alex", text: "Are you sure no one saw you?" },
+            { id: 30, sender: "Charlie", text: "Guys, calm down! It was late, it’s like an urban legend waiting to happen" },
+            { id: 31, sender: "Sam", text: "Are we robbing a bank next??" },
+            { id: 32, sender: "Charlie", text: "Ooh, now there’s an idea for next Halloween... jokes hehehe 🤫" }
+        ];
+
+        const updatedMessages = [
+            { id: 1, sender: "Alex", text: "Last night was WILD! What did everyone get up to after we left the party? 😜🎃" },
+            { id: 2, sender: "Alex", text: "Honestly, I feel like I missed out on something crazy..." },
+            { id: 3, sender: "Alex", text: "Spill!" },
+            { id: 4, sender: "Charlie", text: "Let’s just say things got a little out of hand... I heard someone’s car wasn’t where it was supposed to be. 😬" },
+            { id: 5, sender: "Charlie", text: "Yeah, it was like chaos after you guys left. You won’t believe it." },
+            { id: 6, sender: "Jess", text: "Wait, WHAT?! A missing car? I heard about that too!" },
+            { id: 7, sender: "Charlie", text: "Lol" },
+            { id: 8, sender: "Jess", text: "Are you serious, though? Someone actually moved a car??" },
+            { id: 9, sender: "Jess", text: "Who even does that?!" },
+            { id: 10, sender: "Sam", text: "Uh... yeah, so about that..." },
+            { id: 11, sender: "Sam", text: "I, uh, may have seen someone take Jodie's red Ford for a little ride..." },
+            { id: 12, sender: "Sam", text: "But I guess it’s Halloween!" },
+            { id: 13, sender: "Sam", text: "People do wild stuff" },
+            { id: 14, sender: "Alex", text: "Woah lol" },
+            { id: 15, sender: "Alex", text: "Like, someone actually took a car? That’s next-level" },
+            { id: 16, sender: "Sam", text: "I mean, cars get driven places, right?" },
+            { id: 17, sender: "Sam", text: "Plus people get crazy on Halloween" },
+            { id: 18, sender: "Sam", text: "Pretty sure it’s fine, though. No damage or anything. Just a little detour, you know?" },
+            { id: 19, sender: "Charlie", text: "Either way, it’s not exactly where the owner left it anymore 🤫" },
+            { id: 20, sender: "Jess", text: "DUDE" },
+            { id: 21, sender: "Charlie", text: "Relax! It’s parked behind the old movie theatre" },
+            { id: 22, sender: "Charlie", text: "You know that row of dumpsters near the back alley?" },
+            { id: 23, sender: "Charlie", text: "Yeah, it’s kind of tucked away there. Oh, and before you freak out... someone might’ve added a little Halloween flair to it 👻 Just a skeleton hanging from the rearview mirror, nothing major. Honestly, it looks pretty cool now, if I do say so myself! 🎃⚡️" },
+            { id: 24, sender: "Jess", text: "WHAT?!" },
+            { id: 25, sender: "Jess", text: "So now it’s a Halloween decoration??" },
+            { id: 26, sender: "Jess", text: "Are you insane??" },
+            { id: 27, sender: "Alex", text: "This is like straight-up something out of a Netflix series" },
+            { id: 28, sender: "Alex", text: "Are you sure no one saw anything?" },
+            { id: 29, sender: "Charlie", text: "Guys, calm down! It was late, it’s like an urban legend waiting to happen" },
+            { id: 30, sender: "Sam", text: "Are we robbing a bank next??" },
+            { id: 31, sender: "Charlie", text: "Ooh, now there’s an idea for next Halloween... jokes hehehe 🤫" }
+        ];
+
+        function senderColor(name) {
+            if (SENDER_COLORS[name]) {
+                return SENDER_COLORS[name];
+            }
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+            }
+            return FALLBACK_COLORS[hash % FALLBACK_COLORS.length];
+        }
+
+        function createRandom(seed) {
+            let state = seed >>> 0;
+            return function () {
+                state = (state * 1664525 + 1013904223) >>> 0;
+                return state / 4294967296;
+            };
+        }
+
+        function buildSchedule(count, budgetMs) {
+            const gapCount = Math.max(0, count - 1);
+            if (gapCount === 0) {
+                return [];
+            }
+            const random = createRandom(SCHEDULE_SEED);
+            const raw = [];
+            for (let i = 0; i < gapCount; i++) {
+                raw.push(GAP_MIN_MS + random() * (GAP_MAX_MS - GAP_MIN_MS));
+            }
+            const rawTotal = raw.reduce(function (sum, value) { return sum + value; }, 0);
+            const available = budgetMs - INITIAL_DELAY_MS - TYPING_MS * count;
+            if (available <= 0) {
+                return raw.map(function () { return 0; });
+            }
+            const scale = available / rawTotal;
+            return raw.map(function (value) { return value * scale; });
+        }
+
+        function IconBack() {
+            return (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 12H5" />
+                    <path d="M12 19l-7-7 7-7" />
+                </svg>
+            );
+        }
+
+        function IconGroupAvatar() {
+            return (
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="#8E9AA0">
+                    <circle cx="15" cy="15.5" r="5.4" />
+                    <circle cx="26.2" cy="17" r="4.2" />
+                    <path d="M4.6 32.2c0-5.3 4.7-8.6 10.4-8.6s10.4 3.3 10.4 8.6z" />
+                    <path d="M26.4 23.9c4.6 0 8.4 2.7 8.4 6.9v1.4h-7.1c0-3.1-1.2-5.8-3.3-7.7a11 11 0 0 1 2-0.6z" />
+                </svg>
+            );
+        }
+
+        function IconVideo() {
+            return (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M4 6.5h9.2c1 0 1.8.8 1.8 1.8v7.4c0 1-.8 1.8-1.8 1.8H4c-1 0-1.8-.8-1.8-1.8V8.3c0-1 .8-1.8 1.8-1.8z" />
+                    <path d="M16.6 10.6l4.2-2.6c.5-.3 1.2.1 1.2.7v6.6c0 .6-.7 1-1.2.7l-4.2-2.6z" />
+                </svg>
+            );
+        }
+
+        function IconCall() {
+            return (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6.6 3.2c.6-.3 1.4-.1 1.8.5l1.9 2.9c.4.6.3 1.4-.3 1.9l-1.2 1c-.3.2-.4.6-.2.9a12.6 12.6 0 0 0 4.2 4.2c.3.2.7.1.9-.2l1-1.2c.5-.6 1.3-.7 1.9-.3l2.9 1.9c.6.4.8 1.2.5 1.8l-.9 1.7c-.5.9-1.5 1.4-2.5 1.2C11 20.5 4 13.5 3.3 7.3c-.1-1 .4-2 1.3-2.5z" />
+                </svg>
+            );
+        }
+
+        function IconMenu() {
+            return (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="5" r="1.9" />
+                    <circle cx="12" cy="12" r="1.9" />
+                    <circle cx="12" cy="19" r="1.9" />
+                </svg>
+            );
+        }
+
+        function IconSignal() {
+            return (
+                <svg width="15" height="12" viewBox="0 0 15 12" fill="currentColor">
+                    <rect x="0" y="8" width="2.6" height="4" rx="0.6" />
+                    <rect x="4.1" y="5.6" width="2.6" height="6.4" rx="0.6" />
+                    <rect x="8.2" y="3.2" width="2.6" height="8.8" rx="0.6" />
+                    <rect x="12.3" y="0.6" width="2.6" height="11.4" rx="0.6" />
+                </svg>
+            );
+        }
+
+        function IconWifi() {
+            return (
+                <svg width="15" height="12" viewBox="0 0 15 12" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+                    <path d="M1.4 4.2a9 9 0 0 1 12.2 0" />
+                    <path d="M3.9 6.9a5.4 5.4 0 0 1 7.2 0" />
+                    <path d="M6.4 9.5a2 2 0 0 1 2.2 0" />
+                </svg>
+            );
+        }
+
+        function IconBattery() {
+            return (
+                <svg width="22" height="12" viewBox="0 0 22 12" fill="none">
+                    <rect x="0.7" y="1.4" width="17.6" height="9.2" rx="2.2" stroke="currentColor" strokeWidth="1.3" />
+                    <rect x="2.4" y="3.1" width="12.4" height="5.8" rx="1.2" fill="currentColor" />
+                    <path d="M20 4.6v2.8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+            );
+        }
+
+        function IconEmoji() {
+            return (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M8.6 14.4a4.4 4.4 0 0 0 6.8 0" />
+                    <path d="M9 9.4v.1" />
+                    <path d="M15 9.4v.1" />
+                </svg>
+            );
+        }
+
+        function IconAttach() {
+            return (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
+                    <path d="M12 5v14" />
+                    <path d="M5 12h14" />
+                </svg>
+            );
+        }
+
+        function IconCamera() {
+            return (
+                <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3.2 8.6h3l1.4-2h6.8l1.4 2h3c.9 0 1.6.7 1.6 1.6v7c0 .9-.7 1.6-1.6 1.6H3.2c-.9 0-1.6-.7-1.6-1.6v-7c0-.9.7-1.6 1.6-1.6z" />
+                    <circle cx="12" cy="13.7" r="3.2" />
+                </svg>
+            );
+        }
+
+        function IconMic() {
+            return (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 3.6a2.9 2.9 0 0 1 2.9 2.9v5a2.9 2.9 0 0 1-5.8 0v-5A2.9 2.9 0 0 1 12 3.6z" />
+                    <path d="M6.3 11.1a.9.9 0 0 1 1.8 0 3.9 3.9 0 0 0 7.8 0 .9.9 0 0 1 1.8 0 5.7 5.7 0 0 1-4.8 5.6v2.1h2.3a.9.9 0 0 1 0 1.8H9.6a.9.9 0 0 1 0-1.8h2.3v-2.1a5.7 5.7 0 0 1-4.8-5.6z" />
+                </svg>
+            );
+        }
+
+        function WhatsAppSimulation() {
             const [messages, setMessages] = useState([]);
             const [isTyping, setIsTyping] = useState(false);
-            const messagesEndRef = useRef(null);
+            const [phase, setPhase] = useState("initial");
+            const bodyRef = useRef(null);
+            const timersRef = useRef([]);
 
             useEffect(() => {
+                const gaps = buildSchedule(initialMessages.length, DELIVERY_WINDOW_MS - SETTLE_MS);
+                const timers = timersRef.current;
                 let index = 0;
-                let chatActive = true;
-                
-                function sendNextMessage() {
-                    if (index < initialMessages.length && chatActive) {
-                        setIsTyping(true);
-                        const typingDelay = 1500; 
-                        const nextDelay = Math.random() * (5000 - 2000) + 2000; 
-                        
-                        setTimeout(() => {
-                            setIsTyping(false);
-                            setMessages((prev) => {
-                                const newMessages = [...prev, initialMessages[index]];
-                                return newMessages;
-                            });
-                            index++;
-                            if (chatActive) {
-                                setTimeout(sendNextMessage, nextDelay);
-                            }
-                        }, typingDelay);
-                    }
+                let active = true;
+
+                function track(callback, delay) {
+                    const id = setTimeout(callback, delay);
+                    timers.push(id);
+                    return id;
                 }
-                
-                const initialDelay = 2000;
-                setTimeout(sendNextMessage, initialDelay);
 
-                // **At 2.5 minutes (150,000ms), OVERWRITE messages**
-                const updateMessagesTimeout = setTimeout(() => {
-                chatActive = false;          // stops the loop
-                setIsTyping(false);          // clears the typing indicator
-                setMessages(updatedMessages); // overwrites cleanly
-                    }, 150000);
+                function step() {
+                    if (!active || index >= initialMessages.length) {
+                        return;
+                    }
+                    setIsTyping(true);
+                    track(function () {
+                        if (!active) {
+                            return;
+                        }
+                        setIsTyping(false);
+                        const nextMessage = initialMessages[index];
+                        setMessages(function (prev) {
+                            return prev.concat(nextMessage);
+                        });
+                        index += 1;
+                        if (index < initialMessages.length) {
+                            track(step, gaps[index - 1]);
+                        }
+                    }, TYPING_MS);
+                }
 
+                track(step, INITIAL_DELAY_MS);
 
-                // **Stop after 5 minutes and move to next Gorilla node**
-                const stopChat = setTimeout(() => {
-                    chatActive = false;
+                track(function () {
+                    active = false;
+                    setIsTyping(false);
+                    setPhase("updated");
+                    setMessages(updatedMessages);
+                }, SWAP_AT_MS);
+
+                track(function () {
+                    active = false;
+                    setIsTyping(false);
+                    setPhase("ended");
                     setMessages([{ id: 999, sender: "System", text: "Chat session has ended." }]);
-                    if (typeof gorilla !== 'undefined') {
+                    if (typeof gorilla !== "undefined") {
                         gorilla.finish();
                     } else {
-                        console.warn('Gorilla API is not available.');
+                        console.warn("Gorilla API is not available.");
                     }
-                }, 300000); // 5 minutes
+                }, END_AT_MS);
 
-                return () => {
-                    clearTimeout(updateMessagesTimeout);
-                    clearTimeout(stopChat);
+                return function () {
+                    active = false;
+                    timers.forEach(clearTimeout);
+                    timers.length = 0;
                 };
             }, []);
-            
+
+            useEffect(() => {
+                const body = bodyRef.current;
+                if (body) {
+                    body.scrollTop = body.scrollHeight;
+                }
+            }, [messages, isTyping]);
+
+            const visible = messages.filter(function (msg) {
+                return msg && msg.text;
+            });
+
             return (
-                <div className="chat-container">
-                    <div className="chat-header">WhatsApp Chat</div>
-                    <div className="chat-body">
-                        {messages.map(msg => (
-                            msg && msg.text ? (
-                                <div key={msg.id} className={`message ${msg.sender === "You" ? "sent" : "received"}`}>
-                                    <strong>{msg.sender}:</strong> {msg.text}
+                <div className="phone">
+                    <div className="status-bar">
+                        <span>{STATUS_TIME}</span>
+                        <span className="status-icons">
+                            <IconSignal />
+                            <IconWifi />
+                            <IconBattery />
+                        </span>
+                    </div>
+                    <div className="chat-header">
+                        <span className="header-back"><IconBack /></span>
+                        <span className="header-avatar"><IconGroupAvatar /></span>
+                        <span className="header-identity">
+                            <span className="header-name">{GROUP_NAME}</span>
+                            <span className="header-subtitle">{PARTICIPANTS.join(", ")}</span>
+                        </span>
+                        <span className="header-actions">
+                            <IconVideo />
+                            <IconCall />
+                            <IconMenu />
+                        </span>
+                    </div>
+                    <div className="chat-body" ref={bodyRef}>
+                        <div className="body-spacer" />
+                        {visible.map((msg, i) => {
+                            if (msg.sender === "System") {
+                                return <div key={`${phase}-${msg.id}`} className="system-chip">{msg.text}</div>;
+                            }
+                            const previous = visible[i - 1];
+                            const runStart = !previous || previous.sender !== msg.sender || previous.sender === "System";
+                            const outgoing = msg.sender === "You";
+                            const classes = [
+                                "message",
+                                outgoing ? "sent" : "received",
+                                runStart ? "run-start tailed" : ""
+                            ].join(" ").trim();
+                            return (
+                                <div key={`${phase}-${msg.id}`} className={classes}>
+                                    {runStart && !outgoing && (
+                                        <span className="sender-name" style={{ color: senderColor(msg.sender) }}>{msg.sender}</span>
+                                    )}
+                                    {msg.text}
                                 </div>
-                            ) : null
-                        ))}
-                        {isTyping && <div className="message typing">...typing</div>}
-                        <div ref={messagesEndRef}></div>
+                            );
+                        })}
+                        {isTyping && <div className="message received typing">typing…</div>}
+                    </div>
+                    <div className="composer">
+                        <span className="composer-icon"><IconEmoji /></span>
+                        <span className="composer-field">Type a message</span>
+                        <span className="composer-icon"><IconAttach /></span>
+                        <span className="composer-icon"><IconCamera /></span>
+                        <span className="composer-send"><IconMic /></span>
                     </div>
                 </div>
             );
         }
-        
+
         ReactDOM.createRoot(document.getElementById("root")).render(<WhatsAppSimulation />);
     </script>
 </body>
