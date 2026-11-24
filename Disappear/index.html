@@ -24,7 +24,7 @@
             overflow: hidden;
         }
         .phone {
-            width: min(420px, 100%);
+            width: min(420px, 100vw);
             height: min(760px, 100vh);
             background: #EFEAE2;
             border-radius: 18px;
@@ -562,11 +562,7 @@
                     setIsTyping(false);
                     setPhase("ended");
                     setMessages([{ id: 999, sender: "System", text: "Chat session has ended." }]);
-                    if (typeof gorilla !== "undefined") {
-                        gorilla.finish();
-                    } else {
-                        console.warn("Gorilla API is not available.");
-                    }
+                    window.top.postMessage({ action: "finished" }, "*");
                 }, END_AT_MS);
 
                 return function () {
